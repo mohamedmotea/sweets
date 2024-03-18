@@ -15,7 +15,8 @@ const initiateApp = (app,express)=>{
   app.use('/api/v1/user',router.user)
   app.use('/api/v1/shop',router.shop)
   app.use('/api/v1/category',router.category)
-  // app.use('/auth',router.authRouter)
+  app.use('/api/v1/subCategory',router.subCategory)
+
   app.use('*',(req,res,next)=> res.status(404).json({message:'page not found'}))
   
   // middleware to handle any errors

@@ -34,15 +34,14 @@ export const deleteCategory = async (req,res,next)=>{
   // destructure the required data for request params
   const {categoryId} = req.params
   // get the category
-  const category = await Category.findById(categoryId)
+  const category = await Category.findByIdAndDelete(categoryId)
   if(!category) return next(new Error('هذا القسم غير موجود',{cause:404}))
-  const dltCategory = await Category.findByIdAndDelete(categoryId)
-  res.status(200).json({message:'تم حذف القسم بنجاح',data:dltCategory,success:true})
+  res.status(200).json({message:'تم حذف القسم بنجاح',data:category,success:true})
 }
 
 export const getAllCategory = async (req,res,next)=>{
-  const {page,size} = req.query
-  const ApiFeature = new ApiFeatures(req.query,Category.find()).pagination({page,size})
+  const {page,size,...search} = req.query
+  const ApiFeature = new ApiFeatures(req.query,Category.find()).pagination({page,size}).search(...search)
   const categories = await ApiFeature.mongooseQuery
   res.status(200).json({message:'الحصول علي الاقسام بنجاح',data:categories,success:true})
 }

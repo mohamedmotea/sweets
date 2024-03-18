@@ -26,6 +26,7 @@ class ApiFeatures {
     let searchQuery = {}
     if(search.shop_name) searchQuery.shop_name = {$regex:search.shop_name,$options:'i'}
     if(search.location) searchQuery.location = {$regex:search.location,$options:'i'}
+    if(search.name) searchQuery.name = {$regex:search.name,$options:'i'}
     // if(search.discount) searchQuery.discount = {$ne : 0 }
     // // search Price -> 
     // if(search.priceFrom && ! search.priceTo) searchQuery.appliedPrice = {$gte : search.priceFrom}
