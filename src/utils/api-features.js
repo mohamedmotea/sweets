@@ -27,11 +27,11 @@ class ApiFeatures {
     if(search.shop_name) searchQuery.shop_name = {$regex:search.shop_name,$options:'i'}
     if(search.location) searchQuery.location = {$regex:search.location,$options:'i'}
     if(search.name) searchQuery.name = {$regex:search.name,$options:'i'}
-    // if(search.discount) searchQuery.discount = {$ne : 0 }
-    // // search Price -> 
-    // if(search.priceFrom && ! search.priceTo) searchQuery.appliedPrice = {$gte : search.priceFrom}
-    // if(search.priceTo && ! search.priceFrom) searchQuery.appliedPrice = {$lte : search.priceFrom}
-    // if(search.priceTo &&  search.priceFrom) searchQuery.appliedPrice = {$lte : search.priceTo,$gte: search.priceFrom}
+    if(search.discount) searchQuery.discount = {$ne : 0 }
+    // search Price -> 
+    if(search.priceFrom && ! search.priceTo) searchQuery.price = {$gte : search.priceFrom}
+    if(search.priceTo && ! search.priceFrom) searchQuery.price = {$lte : search.priceFrom}
+    if(search.priceTo &&  search.priceFrom) searchQuery.price = {$lte : search.priceTo,$gte: search.priceFrom}
     this.mongooseQuery = this.mongooseQuery.find(searchQuery)
     return this
   }
