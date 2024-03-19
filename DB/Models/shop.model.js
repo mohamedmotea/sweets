@@ -19,6 +19,11 @@ const shop_schema = new Schema({
   delivery_Number:{
     type:Array,
     required:true,
+  },
+  image:{
+    secure_url:{type:String},
+    public_id:{type:String},
+    folderId:{type:String}
   }
 },{timestamps:true})
 

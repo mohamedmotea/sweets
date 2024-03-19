@@ -1,6 +1,8 @@
 import Shop from "../../../DB/Models/shop.model.js"
 import { systemRole } from "../../utils/system.js"
 import ApiFeatures from './../../utils/api-features.js';
+import cloudinaryConnection from './../../utils/cloudinary.js';
+import uniqueString from './../../utils/generate-unique-string.js';
 
 
 export const addShop = async (req, res, next) => {
@@ -11,12 +13,21 @@ export const addShop = async (req, res, next) => {
   // check if shop exist
   const shop = await Shop.findOne({shop_name})
   if(shop) return next(new Error('هذا المتجر موجود',{cause:409}))
+  let image = {}
+  if(req.file?.path){
+    const folderId = uniqueString(3)
+    const {secure_url,public_id} = await cloudinaryConnection().uploader.upload(req.file.path,{
+    folder:`${process.env.MAIN_FOLDER}/shops/${folderId}`})
+    image = {secure_url,public_id,folderId}
+  }
+  
   // create shop
   const newShop = new Shop({
     shop_name,
     location,
     delivery_Number,
-    userId
+    userId,
+    image
   })
   // save shop
   await newShop.save()
@@ -27,7 +38,7 @@ export const updateShop = async(req,res,next)=>{
     // destructuing the required data from request params
     const {shopId} = req.params
     // destructuing the required data from request body
-    const {shop_name,location,newDelivery_Number,oldDelivery_Number} = req.body
+    const {shop_name,location,newDelivery_Number,oldDelivery_Number,oldPublicId} = req.body
     // destructuring the required data from authenticated
     const {userId,role} = req.user
     // check if shop exist
@@ -44,6 +55,19 @@ export const updateShop = async(req,res,next)=>{
     if(newDelivery_Number) shop.delivery_Number.push(newDelivery_Number)
     if(oldDelivery_Number) {
       await Shop.updateOne({_id:shopId},{$pull:{delivery_Number:oldDelivery_Number}})
+    }
+    if(oldPublicId){
+      if(!req.file?.path) return next(new Error('يجب تحميل الصوره اولا',{cause:404}))
+      if(shop.image.folderId){
+        await cloudinaryConnection().api.delete_resources_by_prefix(`${process.env.MAIN_FOLDER}/shops/${shop.image.folderId}`)
+        await cloudinaryConnection().api.delete_folder(`${process.env.MAIN_FOLDER}/shops/${shop.image.folderId}`)
+      }
+      const folderId = uniqueString(3)
+      // uploud image
+      const {secure_url,public_id} = await cloudinaryConnection().uploader.upload(req.file.path,{
+        folder: `${process.env.MAIN_FOLDER}/shops/${folderId}`})
+        shop.image = {secure_url,public_id,folderId}
+
     }
     // save shop
     await shop.save()

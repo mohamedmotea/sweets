@@ -25,7 +25,8 @@ export const updateShop = {
     }),
     newDelivery_Number:Joi.string(),
     oldDelivery_Number:Joi.string(),
-     location:Joi.string()
+     location:Joi.string(),
+     oldPublicId:Joi.string()
   }),
      headers:validation.headers,
      params:Joi.object({

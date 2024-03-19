@@ -53,14 +53,14 @@ export const deleteSubCategory = async (req,res,next)=>{
 
 export const getAllSubCategories = async (req,res,next)=>{
   const {page,size,...search} = req.query
-  const ApiFeature = new ApiFeatures(req.query,SubCategory.find()).pagination({page,size}).search(search)
+  const ApiFeature = new ApiFeatures(req.query,SubCategory.find().populate([{path:'products'}])).pagination({page,size}).search(search)
   const subCategories = await ApiFeature.mongooseQuery
   res.status(200).json({message:'الحصول علي الاقسام بنجاح',data:subCategories,success:true})
 }
 
 export const getSubCategory = async (req,res,next)=>{
   const {subCategoryId} = req.params
-  const subCategory = await SubCategory.findById(subCategoryId)
+  const subCategory = await SubCategory.findById(subCategoryId).populate([{path:'products'}])
   if(!subCategory) return next(new Error('هذا القسم غير موجود',{cause:404}))
   res.status(200).json({message:'الحصول علي القسم بنجاح',data:subCategory,success:true})
 }
