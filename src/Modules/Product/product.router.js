@@ -13,6 +13,7 @@ router
 .put('/:productId',multerMiddleware().fields([{name:'image',maxCount:1},{name:'images',maxCount:5}]),vld(schema.updateProduct),auth([systemRole.ADMIN,systemRole.SUPERADMIN]),expressAsyncHandler(PC.updateProduct))
 .delete('/:productId',vld(schema.params),auth([systemRole.ADMIN,systemRole.SUPERADMIN]),expressAsyncHandler(PC.deleteProduct))
 
+.get('/subCategory/:subCategoryId',expressAsyncHandler(PC.allProductsForSubCategory))
 .get('/',expressAsyncHandler(PC.allProducts))
 .get('/:productId',vld(schema.params),expressAsyncHandler(PC.getProduct))
 export default router

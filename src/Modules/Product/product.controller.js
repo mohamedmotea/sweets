@@ -147,6 +147,7 @@ export const getProduct = async (req, res,next) => {
   if(!product) return next(new Error('هذا المنتج غير موجود',{cause:404}))
   res.status(200).json({message:'الحصول علي المنتج بنجاح',data:product,success:true})
 }
+
 export const allProductsForSubCategory = async (req,res,next)=>{
   const {page,size,...search} = req.query
   const {subCategoryId} = req.params
