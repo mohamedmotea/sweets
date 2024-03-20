@@ -3,6 +3,7 @@ import Category from '../../../DB/Models/category.model.js';
 import ApiFeatures from '../../utils/api-features.js';
 import SubCategory from './../../../DB/Models/subCategory.js';
 
+
 export const addSubCategory = async(req,res,next)=>{
   // destructure the required data for request params
   const {categoryId} = req.params
@@ -60,7 +61,10 @@ export const getAllSubCategories = async (req,res,next)=>{
 
 export const getSubCategory = async (req,res,next)=>{
   const {subCategoryId} = req.params
-  const subCategory = await SubCategory.findById(subCategoryId).populate([{path:'products'}])
-  if(!subCategory) return next(new Error('هذا القسم غير موجود',{cause:404}))
+  const {...search} = req.query
+  const ApiFeature = new ApiFeatures(req.query,SubCategory.find({_id:subCategoryId}).populate([{path:'products'}])).search(search)
+  // const subCategory = await SubCategory.findById(subCategoryId).populate([{path:'products'}])
+  // if(!subCategory) return next(new Error('هذا القسم غير موجود',{cause:404}))
+  const subCategory = await ApiFeature.mongooseQuery
   res.status(200).json({message:'الحصول علي القسم بنجاح',data:subCategory,success:true})
 }
