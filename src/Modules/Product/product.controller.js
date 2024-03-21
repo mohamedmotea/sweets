@@ -9,31 +9,34 @@ import ApiFeatures from './../../utils/api-features.js';
 
 export const addProduct = async(req,res,next)=>{
   // destructure the required data for request body
-  const {name,description,price,categoryId,subCategoryId,stock,discount} = req.body
+  const {name,description,price,categoryId,subCategoryId,stock,discount = 0} = req.body
   // destructure the required data for request authentication
   const {id:addedBy} = req.user
+  // check if product price < discount
+  if(+price <= discount) return next(new Error('الخصم اكبر من السعر',{cause:400}))
   // check category
-  const checkCategory = await Category.findById(categoryId)
-  if(!checkCategory) return next(new Error('هذا القسم غير موجود',{cause:404}))
-  // check sub category
-  const checkSubCategory = await SubCategory.findById(subCategoryId)
-  if(!checkSubCategory) return next(new Error('هذا القسم غير موجود',{cause:404}))
+const checkCategory = await Category.findById(categoryId)
+if(!checkCategory) return next(new Error('هذا القسم غير موجود',{cause:404}))
+// check sub category
+const checkSubCategory = await SubCategory.findById(subCategoryId)
+if(!checkSubCategory) return next(new Error('هذا القسم غير موجود',{cause:404}))
 
-  // handle image
-  const folderId = uniqueString(4)
-    const {secure_url,public_id} = await cloudinaryConnection().uploader.upload(req.files.image[0].path,{
-      folder:`${process.env.MAIN_FOLDER}/products/${folderId}/`
-    })
-    // #####################################
-    let imageCover = []
-    for(const file of req.files.images){
-      const {secure_url,public_id} = await cloudinaryConnection().uploader.upload(file.path,{
-        folder:`${process.env.MAIN_FOLDER}/products/${folderId}/`
-      })
-      imageCover.push({secure_url,public_id})
-    }
-    req.folder = folderId
+// handle image
+const folderId = uniqueString(4)
+const {secure_url,public_id} = await cloudinaryConnection().uploader.upload(req.files.image[0].path,{
+  folder:`${process.env.MAIN_FOLDER}/products/${folderId}/`
+})
+// #####################################
+let imageCover = []
+for(const file of req.files.images){
+  const {secure_url,public_id} = await cloudinaryConnection().uploader.upload(file.path,{
+    folder:`${process.env.MAIN_FOLDER}/products/${folderId}/`
+  })
+  imageCover.push({secure_url,public_id})
+}
+req.folder = folderId
   // create a new product
+  let finalPrice = +price - +discount 
   const newProduct = new Product({
     name,
     description,
@@ -45,7 +48,8 @@ export const addProduct = async(req,res,next)=>{
     image:{secure_url,public_id},
     imageCover,
     stock,
-    discount
+    discount,
+    finalPrice
   })
   // save the product
  await newProduct.save()
@@ -76,8 +80,14 @@ export const updateProduct = async(req,res,next)=>{
     if(!subCategory) return next(new Error('هذا القسم غير موجود',{cause:404}))
     product.subCategoryId = newSubCategoryId
   }
-  if(price) product.price = price
-  if(discount) product.discount = discount
+  if(price) {
+    product.price = price
+    product.finalPrice = price - (discount || product.discount)
+  }
+  if(discount) {
+    product.discount = +discount
+    product.finalPrice = (+price || product.price) - +discount
+  }
   if(name) product.name = name
   if(stock) product.stock = stock
   if(description) product.description = description
@@ -104,6 +114,7 @@ export const updateProduct = async(req,res,next)=>{
       }
     })
   }
+  if((+price || product.price) <= (+discount || product.discount) ) return next(new Error('الخصم اكبر من السعر',{cause:400}))
 
   await product.save()
   res.status(200).json({message:'تم التعديل بنجاح',data:product,success:true})
@@ -136,9 +147,13 @@ try {
 
 export const allProducts = async (req,res,next)=>{
   const {page,size,...search} = req.query
-  const ApiFeature = new ApiFeatures(req.query,Product.find().populate([{path:'categoryId'},{path:'subCategoryId'},{path:'addedBy',select:'userName'}])).search(search).pagination({page,size})
+  const {subCategoryId} = req.params
+  let filter ={}
+  if(subCategoryId){ filter.subCategoryId = subCategoryId  }
+  const totalProducts = await Product.find(filter)
+  const ApiFeature = new ApiFeatures(req.query,Product.find(filter)).search(search).pagination({page,size})
   const products = await ApiFeature.mongooseQuery
-  res.status(200).json({message:'تم العثور علي المنتجات بنجاح',data:products,success:true})
+  res.status(200).json({message:'تم العثور علي المنتجات بنجاح',data:products,success:true,totalProducts:totalProducts.length})
 }
 
 export const getProduct = async (req, res,next) => {
@@ -148,12 +163,5 @@ export const getProduct = async (req, res,next) => {
   res.status(200).json({message:'الحصول علي المنتج بنجاح',data:product,success:true})
 }
 
-export const allProductsForSubCategory = async (req,res,next)=>{
-  const {page,size,...search} = req.query
-  const {subCategoryId} = req.params
-  const ApiFeature = new ApiFeatures(req.query,Product.find({subCategoryId}).populate([{path:'categoryId'},{path:'subCategoryId'},{path:'addedBy',select:'userName'}])).search(search).pagination({page,size})
-  const products = await ApiFeature.mongooseQuery
-  res.status(200).json({message:'تم العثور علي المنتجات بنجاح',data:products,success:true})
-}
 
 

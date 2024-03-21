@@ -7,13 +7,11 @@ import auth from './../../Middlewares/auth.middleware.js';
 import { systemRole } from "../../utils/system.js";
 import multerMiddleware from './../../Middlewares/multer.middleware.js';
 
-const router = Router()
+const router = Router({mergeParams:true})
 router
 .post('/',multerMiddleware().fields([{name:'image',maxCount:1},{name:'images',maxCount:5}]),vld(schema.addProduct),auth([systemRole.ADMIN,systemRole.SUPERADMIN]),expressAsyncHandler(PC.addProduct))
 .put('/:productId',multerMiddleware().fields([{name:'image',maxCount:1},{name:'images',maxCount:5}]),vld(schema.updateProduct),auth([systemRole.ADMIN,systemRole.SUPERADMIN]),expressAsyncHandler(PC.updateProduct))
 .delete('/:productId',vld(schema.params),auth([systemRole.ADMIN,systemRole.SUPERADMIN]),expressAsyncHandler(PC.deleteProduct))
-
-.get('/subCategory/:subCategoryId',expressAsyncHandler(PC.allProductsForSubCategory))
 .get('/',expressAsyncHandler(PC.allProducts))
 .get('/:productId',vld(schema.params),expressAsyncHandler(PC.getProduct))
 export default router

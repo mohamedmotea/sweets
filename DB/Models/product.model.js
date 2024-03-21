@@ -27,6 +27,13 @@ const product_schema = new Schema({
     default:0,
     min:0,
   },
+  discount:{type:Number,min:0,default:0},
+  finalPrice:{
+    type:Number,
+    required:true,
+    default:0,
+    min:0,
+  },
   categoryId:{
     type:Schema.Types.ObjectId,
     ref:'Category',
@@ -58,9 +65,7 @@ const product_schema = new Schema({
     required:true,
     default:0,
     min:0,
-  },
-  discount:{type:Number,min:0,default:0}
-
+  }
 },{timestamps:true})
 
 product_schema.pre('save',function(next,_){ 

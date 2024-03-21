@@ -18,6 +18,7 @@ const initiateApp = (app,express)=>{
   app.use('/api/v1/category',router.category)
   app.use('/api/v1/subCategory',router.subCategory)
   app.use('/api/v1/product',router.product)
+  app.use('/api/v1/cart',router.cart)
 
   app.use('*',(req,res,next)=> res.status(404).json({message:'page not found'}))
   

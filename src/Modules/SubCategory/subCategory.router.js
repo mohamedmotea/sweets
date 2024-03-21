@@ -5,8 +5,10 @@ import * as SC from './subCategory.controller.js'
 import * as schema from './subCategory.validation.js'
 import auth from '../../Middlewares/auth.middleware.js';
 import { systemRole } from "../../utils/system.js";
+import productRouter from './../Product/product.router.js';
 
 const router = Router()
+router.use('/:subCategoryId/product',productRouter)
 router.post('/:categoryId',vld(schema.addSubCategory),auth([systemRole.SUPERADMIN]),expressAsyncHandler(SC.addSubCategory))
 .patch('/:subCategoryId',vld(schema.updateSubCategory),auth([systemRole.SUPERADMIN]),expressAsyncHandler(SC.updateSubCategory))
 .delete('/:subCategoryId',vld(schema.params),auth([systemRole.SUPERADMIN]),expressAsyncHandler(SC.deleteSubCategory))
