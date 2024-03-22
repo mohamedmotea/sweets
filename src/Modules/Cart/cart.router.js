@@ -12,6 +12,7 @@ const router = Router();
 router.post('/',vld(schema.addProductToCart),auth(Object.values(systemRole)),expressAsyncHandler(CC.addProductToCart))
 .patch('/:productId',vld(schema.removeProductFromCart),auth(Object.values(systemRole)),expressAsyncHandler(CC.removeProductFromCart))
 .delete('/',auth(Object.values(systemRole)),expressAsyncHandler(CC.deleteCart))
+.put('/:productId',vld(schema.updateQuantity),auth(Object.values(systemRole)),expressAsyncHandler(CC.updateQuantity))
 .get('/',auth(Object.values(systemRole)),expressAsyncHandler(CC.getCart))
 
 export default router

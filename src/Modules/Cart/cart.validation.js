@@ -15,3 +15,13 @@ export const removeProductFromCart = {
   }),
   headers:validation.headers
 }
+
+export const updateQuantity = {
+  body:Joi.object({
+    quantity:Joi.number().min(1).required().messages({'string.min': `اقل عدد هو 1`,'any.required': `هذا الحقل مطلوب`}),
+  }),
+  params:Joi.object({
+    productId:Joi.custom(validation.params).required().messages({ 'any.required': `هذا الحقل مطلوب`})
+  })
+,headers:validation.headers
+}

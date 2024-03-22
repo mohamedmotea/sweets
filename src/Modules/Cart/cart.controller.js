@@ -87,3 +87,29 @@ export const getCart = async (req,res,next)=>{
     success:true
   })
 }
+export const updateQuantity = async (req,res,next)=> {
+  // destructuring required data from request params
+  const {productId} = req.params;
+  // destructuring required data from request body
+  const {quantity} = req.body;
+  // destructuring user data from authorization
+  const {id:userId} = req.user
+  // get Cart
+  const userCart = await Cart.findOne({userId})
+  if(!userCart) return next(new Error('ليس لديك سلة',{cause:404}))
+  // check if product availabile 
+    const product = await checkProductAvailabilty(productId,quantity)
+    if(!product) return next(new Error('المنتج غير متاح',{cause:400}));
+  // check if product is already in cart 
+  const updateProduct = await updateProductQuantity(userCart,productId,quantity)
+  // if product is not in cart
+  if(!updateProduct){
+    const addProduct =  await addNewProduct(userCart,product,quantity,userId)
+    if(!addProduct) return next(new Error('هذا المنتج غير متاح',{cause:400}))
+  }
+  res.status(200).json({
+    message:'تم تحديث كمية المنتج بنجاح',
+    data:userCart,
+    success:true
+  })
+}
