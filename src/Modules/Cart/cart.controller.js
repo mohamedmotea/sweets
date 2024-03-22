@@ -80,7 +80,7 @@ export const getCart = async (req,res,next)=>{
   // destructuring user data from authorization
   const {id:userId} = req.user
   // get Cart
-  const userCart = await Cart.find({userId}).populate('products.productId')
+  const userCart = await Cart.findOne({userId}).populate('products.productId')
   res.status(200).json({
     message:'تم الحصول علي السلة بنجاح',
     data:userCart,
