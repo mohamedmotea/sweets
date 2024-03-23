@@ -186,7 +186,7 @@ export const signInWithGoogle = async (req,res,next)=>{
   if(!result.email_verified) return next(new Error('لم يتم التحقق من الحساب',{cause:400}))
   // login login
   // find this account
-    const account = await User.findOne({email:result.email,provider:systemProvider.GOOGLE})
+    const account = await User.findOne({email:result.email,provider:"Google"})
     if(!account) return next(new Error('هذا الحساب غير موجود',{cause:404}))
     account.isLoggedIn = true
   await account.save()
