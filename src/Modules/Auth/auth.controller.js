@@ -169,3 +169,34 @@ if(!newUser) return next(new Error('فشل التسجيل',{cause:400}))
 req.savedDocument = {model:User,_id:newUser._id}
 res.status(201).json({msg:'تم تفعيل الحساب بنجاح',success:true})
 }
+
+// SignIn With Google
+export const signInWithGoogle = async (req,res,next)=>{
+  const {idToken} = req.body
+  const client = new OAuth2Client();
+  async function verify() {
+  const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+  return payload
+}
+  const result = await verify().catch(console.error);
+  if(!result.email_verified) return next(new Error('لم يتم التحقق من الحساب',{cause:400}))
+  // login login
+  // find this account
+    const account = await User.findOne({email:result.email,provider:systemProvider.GOOGLE})
+    if(!account) return next(new Error('هذا الحساب غير موجود',{cause:404}))
+    account.isLoggedIn = true
+  await account.save()
+  // create token
+  const token = jwt.sign(
+    {id:account._id,email:account.email,userName:account.userName,
+      createdAt:account.createdAt,role:account.role,
+      isBlocked:account.isBlocked},
+      process.env.TOKEN_SIGNATURE,
+      {expiresIn: '9d'})
+
+  res.status(200).json({message: 'تم تسجيل الدخول بنجاح', token,success:true})
+}

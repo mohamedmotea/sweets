@@ -63,7 +63,7 @@ export const blockUser = {
   })
 }
 
-export const signUpWithGoogle = {
+export const signGoogle = {
   body:Joi.object({
     idToken: Joi.string().required()
   })
