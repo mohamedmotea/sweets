@@ -1,9 +1,10 @@
+import {OAuth2Client} from 'google-auth-library';
 import User from './../../../DB/Models/user.model.js';
 import verifyEmailService from './utils/verifyEmail.js';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { systemRole } from '../../utils/system.js';
-
+import uniqueString from './../../utils/generate-unique-string.js';
 export const signUp = async (req, res, next) => {
   // destructuring the required data from request body
   const {userName,email,password,phoneNumber,role} = req.body
@@ -135,4 +136,36 @@ export const blockUser = async (req,res,next)=>{
   user.isBlocked = true
   await user.save()
   return res.status(200).json({message:'تم الحظر بنجاح',data:user,success:true})
+}
+export const signUpWithGoogle = async(req, res,next) => {
+const {idToken} = req.body
+const client = new OAuth2Client();
+async function verify() {
+const ticket = await client.verifyIdToken({
+    idToken,
+    audience: process.env.CLIENT_ID,
+});
+const payload = ticket.getPayload();
+return payload
+}
+const result = await verify().catch(console.error);
+if(!result.email_verified) return next(new Error('لم يتم التحقق من الحساب',{cause:400}))
+// check email
+  const checkEmail = await User.findOne({email:result.email})
+  if(checkEmail) return next(new Error('هذا الحساب مستخدم من قبل',{cause:409}))
+// Hashed password 
+  const defualtPassword = uniqueString(10)
+const hashedPassword = bcrypt.hashSync(defualtPassword,+process.env.SALT_ROUNDES)
+if(!hashedPassword) return next(new Error('فشل التسجيل',{cause:400}))
+// create a new User 
+const newUser = await User.create({
+userName:result.name
+,email:result.email
+,password:hashedPassword
+,isEmailVerified:result.email_verified
+,provider:'Google'
+})
+if(!newUser) return next(new Error('فشل التسجيل',{cause:400}))
+req.savedDocument = {model:User,_id:newUser._id}
+res.status(201).json({msg:'تم تفعيل الحساب بنجاح',success:true})
 }

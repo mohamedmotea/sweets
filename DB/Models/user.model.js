@@ -37,6 +37,10 @@ const user_schema = new Schema({
   isEmailVerified:{
     type:Boolean,
     default:false
+  },
+  provider:{
+    type:String,
+    enum:['Google']
   }
 },{timestamps:true})
 

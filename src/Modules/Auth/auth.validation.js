@@ -62,3 +62,9 @@ export const blockUser = {
     })
   })
 }
+
+export const signUpWithGoogle = {
+  body:Joi.object({
+    idToken: Joi.string().required()
+  })
+}

@@ -14,6 +14,8 @@ router
 .get('/verify',expressAsyncHandler(AC.verifyEmail))
 .put('/',auth(Object.values(systemRole)),vld(schema.updateUser),expressAsyncHandler(AC.updateUser))
 .delete('/',auth(Object.values(systemRole)),expressAsyncHandler(AC.deleteUser))
+// sign with Google account
+.post('/signUpWithGoogle',vld(schema.signUpWithGoogle),expressAsyncHandler(AC.signUpWithGoogle))
 // Admin - Super Admin
 .post('/:userId',auth([systemRole.ADMIN,systemRole.SUPERADMIN]),vld(schema.blockUser),expressAsyncHandler(AC.blockUser))
 export default router
