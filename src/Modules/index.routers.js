@@ -5,6 +5,7 @@ import category from "./Category/category.router.js";
 import subCategory from "./SubCategory/subCategory.router.js";
 import product from "./Product/product.router.js";
 import cart from './Cart/cart.router.js';
+import menu from './Menu/menu.router.js';
 
 
 export {
@@ -14,5 +15,6 @@ export {
   category,
   subCategory,
   product,
-  cart
+  cart,
+  menu
 }
