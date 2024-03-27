@@ -20,6 +20,7 @@ const initiateApp = (app,express)=>{
   app.use('/api/v1/product',router.product)
   app.use('/api/v1/cart',router.cart)
   app.use('/api/v1/menu',router.menu)
+  app.use('/api/v1/wishlist',router.wishlist)
 
   app.use('*',(req,res,next)=> res.status(404).json({message:'page not found'}))
   

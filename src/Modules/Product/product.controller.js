@@ -146,12 +146,12 @@ try {
 }
 
 export const allProducts = async (req,res,next)=>{
-  const {page,size,...search} = req.query
+  const {page,size,sort,...search} = req.query
   const {subCategoryId} = req.params
   let filter ={}
   if(subCategoryId){ filter.subCategoryId = subCategoryId  }
   const totalProducts = await Product.find(filter)
-  const ApiFeature = new ApiFeatures(req.query,Product.find(filter)).search(search).pagination({page,size})
+  const ApiFeature = new ApiFeatures(req.query,Product.find(filter)).sort(sort).filter(search).search(search).pagination({page,size})
   const products = await ApiFeature.mongooseQuery
   res.status(200).json({message:'تم العثور علي المنتجات بنجاح',data:products,success:true,totalProducts:totalProducts.length})
 }

@@ -6,6 +6,7 @@ import subCategory from "./SubCategory/subCategory.router.js";
 import product from "./Product/product.router.js";
 import cart from './Cart/cart.router.js';
 import menu from './Menu/menu.router.js';
+import wishlist from "./WishList/wishlist.router.js";
 
 
 export {
@@ -16,5 +17,6 @@ export {
   subCategory,
   product,
   cart,
-  menu
+  menu,
+  wishlist
 }
