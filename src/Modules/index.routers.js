@@ -7,6 +7,7 @@ import product from "./Product/product.router.js";
 import cart from './Cart/cart.router.js';
 import menu from './Menu/menu.router.js';
 import wishlist from "./WishList/wishlist.router.js";
+import rate from "./Rate/rate.router.js";
 
 
 export {
@@ -18,5 +19,6 @@ export {
   product,
   cart,
   menu,
-  wishlist
+  wishlist,
+  rate
 }
