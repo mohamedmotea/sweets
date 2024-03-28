@@ -34,11 +34,11 @@ export const removeProductWishlist = async(req,res,next)=>{
   res.status(200).json({message:"تم ازالة المنتج بنجاح",data:newWishlist,status:true})
 }
 
-export const deleteWishlist = (req, res,next) =>{
+export const deleteWishlist = async (req, res,next) =>{
   // destructure the required data for request authentication
   const {id:userId} = req.user
   // find wishlist
-  const deleteWishlist = WishList.findOneAndDelete({userId})
+  const deleteWishlist = await WishList.findOneAndDelete({userId})
   if(!deleteWishlist) return next(new Error("لم يتم حذف ايجاد قائمة مفضلة",{cause:404}))
   res.status(200).json({message:"تم حذف القائمة بنجاح",data:deleteWishlist,status:true})
 }
