@@ -27,7 +27,7 @@ export const addRate = async (req,res,next)=>{
     rating:rate
   })
   // save new rate in database
-  const calcProductRate = await calcRate(productId)
   await newRate.save()
+  const calcProductRate = await calcRate(productId)
   res.status(201).json({message:"تم التقييم بنجاح",rate:newRate,success:true,productRate:calcProductRate.rate})
 }
