@@ -36,7 +36,8 @@ export const addProductToCart = async(req,res,next) => {
   }
   res.status(201).json({
     message:'تم تحديث السلة بنجاح',
-    data:userCart
+    data:userCart,
+    success:true
   })
 }
 
