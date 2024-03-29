@@ -71,7 +71,7 @@ export const deleteCart = async (req,res,next)=>{
   if(!userCart) return next(new Error('ليس لديك سلة',{cause:404}))
   res.status(200).json({
     message:'تم حذف السلة',
-    data:newCart,
+    data:userCart,
     success:true
   })
 }
